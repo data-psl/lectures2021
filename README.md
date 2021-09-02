@@ -21,14 +21,14 @@ Links open Colab notebooks. You may also clone this repository and work locally.
  2. Tuesday: [Practice of Scikit-learn](https://github.com/data-psl/lectures2021/tree/master/notebooks/02_sklearn)
  3. Wednesday: [Optimization](https://colab.research.google.com/github/data-psl/lectures2021/blob/master/notebooks/03_optimization.ipynb)
  4. Thursday: [Classification with PyTorch and GPUs](https://github.com/data-psl/lectures2021/tree/master/notebooks/04_pytorch)
- 5. Friday: [Databases in practice with PostgreSQL and Python](https://data-psl.github.io/lectures2021/notebooks/05_sql.pdf), [Solutions](https://github.com/data-psl/lectures2021/tree/master/notebooks/05_sql_solutions.zip)
+ 5. Friday: Introduction to spark for ML
 
 ## Teachers
 
  * [Pierre Ablin](https://pierreablin.com) (ENS, DMA)
  * [Mathieu Blondel](https://mblondel.org) (Google Brain)
  * [Arthur Mensch](https://amensch.fr) (ENS, DMA)
- * [Pierre Senellart](https://pierre.senellart.com) (ENS, DI)
+ * [Dario Colazzo](https://www.lamsade.dauphine.fr/~colazzo/) (Dauphine Université)
 
 
 ## Acknowledgements
