@@ -55,7 +55,7 @@ Google Research, Brain team
 ---
 # Scope of this lecture
 
-- A one-hour and a half long tutorial for absolute beginners in machine learning
+- A 1h30 long tutorial for absolute beginners in machine learning
 - High-level concepts with almost zero maths
 
 --
@@ -86,6 +86,20 @@ class: center, middle
 ---
 # Supervised learning
 
+- Given some input, **predict** some output
+
+- Prediction function $f \colon \mathcal{X} \to \mathcal{Y}$
+
+- Input domain $\mathcal{X}$
+
+- Output domain $\mathcal{Y}$
+
+- Calling the function: $y = f(\mathbf{x})$
+
+
+---
+# Supervised learning
+
 - Learning from examples (inductive learning)
 
 - Training phase
@@ -101,20 +115,53 @@ class: center, middle
 
 - Given an input, predict the class (category) it belongs to 
 
+- $y \in \mathcal{Y}$ is a categorical variable
+
 - Examples
   - Given the picture of an astronomical object, determine whether it is a star, a galaxy, etc.
   - Given the picture of a person, identify the person
   - Given an email, detect whether it is a spam or not
   - Given the spectogram of a spoken word, recognize the command being spoken
+
+---
+# Types of classification
+
+- Binary classification: $\mathcal{Y} = \\{0, 1\\}$ 
+
+- Multiclass classification: $\mathcal{Y} = [K] = \\{1, \dots, K\\}$
+- Multi-label classification: $\mathcal{Y} = 2^{[K]} = \\{
+\\{\\}, 
+\\{1\\}, \dots, \\{K\\}, 
+\\{1,2\\}, \\{1,3\\}, \\{1, K\\}, 
+\dots, \\{1, \dots, K\\}
+\\}$
+
 ---
 # Regression
 
 - Given an input, predict a real (continuous) variable associated with it
 
+- $y \in \mathcal{Y} = \mathbb{R}$ is real variable
+
 - Examples
  - Given the profile of a person, predict his/her salary
- - Given the characteristics of a house, predict its price
+ - Given house characteristics, predict its price
  - Given a patient's DNA information, predict his/her life expectancy
+ - Given camrea input, predict steering wheel position (autonomous driving)
+
+---
+# Feature engineering
+
+- Samples are often in a raw format 
+
+- It is necessary to extract useful features (descriptors) for the prediction task
+
+- Traditional ML: human-designed extraction rules
+
+- Deep learning: learned features representations
+
+- Predictions as downstream features 
+  - Example: "is there a pedestrian?" can be used as a feature for automatic breaking
 ---
 # The iris dataset
 
@@ -186,7 +233,7 @@ y_4 \\\\
 \end{bmatrix}
 $$
 
-$\mathbf{X}$ is called the data matrix and consists of $n$ samples (observations) with $d$ features (attributes)
+$\mathbf{X}$ is called the data matrix / design matrix and consists of $n$ samples (observations) with $d$ features (attributes)
 
 $\mathbf{x}_i$ is called a feature vector
 
@@ -271,7 +318,7 @@ Does this person make more than 50K per year?
 
 - In machine learning, we want to predict on new data instances.
 That is, for a feature vector $\mathbf{x}$ not seen in the training set,
-we want to build $f(\mathbf{x})$.
+we want to compute $f(\mathbf{x})$.
 
 - In the census example, we want to predict the income of new
 individuals, with a combination of jobs and demographics that we have
@@ -314,6 +361,20 @@ rate do we expect?*
 
 * Different sampling of noise
 * Unobserved combination of features
+
+---
+# Other types of learning
+
+- Unsupervised: learning without human annotations
+  - Clustering: discovers groups (clusters) in the data
+  - Dimensionality reduction
+  - Anomaly detection
+
+- Semi-supervised learning: learning from both annotated and non-annotated data
+
+- Active learning: the algorithm can choose what samples need to be annotated
+
+- And many others...
 ---
 class: center, middle
 
@@ -496,26 +557,76 @@ $f(x) \triangleq w_0 + w_1 x + w_2 x^2 + \dots + w_D x^D$.]
 
 .center[Diminishing returns phenomenon]
 ---
-# Test vs. validation error
+# Hyperparameters
 
-- Hyper-parameters: parameters that are not directly tuned by the learning algorithm
-- Typically controls complexity (e.g. the degree parameter)
+- Parameters not directly tuned by the training algorithm
+
+- Needs to be decided before running the training algorithm
+
+- Typically controls complexity 
+- Examples
+  - the degree parameter (polynomial regression)
+  - the regularization parameter (linear models)
+  - the number of layers (deep learning)
+  - the step size / learning rate (SGD)
+
+---
+# Three types of data sets
+
+- Training set: used for fitting the model parameters
+
+- Validation set: used for picking the "best" hyperparameters
+
+- Test set: used for estimating the final model's quality (as a proxy for generalization accuracy),
+once the hyperparameters are decided
+
+---
+# Train vs. validation accuracy
+
 - Test data should never be used for choosing hyper-parameters
+
 - Use validation data instead (aka held-out data)
 
 .center[
     <img src="sphx_glr_plot_bias_variance_003.png" style="width: 500px;" />
 ]
+
 ---
-# Cross-validation
+# Holding out data
+
+- During the development phase, we often have a single dataset
+
+- Needs to create validation and test sets one way or another
+
+- Simplest strategy: set aside some data once for all
+
+- Inconvenients : we lose training data, we could make a "lucky" split
+
+- Typically fine if the original dataset is very large
+
+---
+# Cross-validation strategies
 
 - Repeatedly split the data into training and validation sets and average the accuracy scores
 
-- More robust estimation of the quality of hyper-parameters, but requires to train the model several times
+- More robust estimation of the validation accuracy but requires to train the model several times
+
+- The same can also be done for the test accuracy
+
+- Possibility to use nested cross-validation (costly)
+
+---
+# K-fold strategy
+
+- Set aside $1/K$ of the data for validation
+
+- Repeat $K$ times
 
 .center[
 <img src="figures/cross_validation.png" width="75%" />
 ]
+
+- Leave-one-out: $K = n$, where $n$ is the dataset size
 
 ---
 # Take home messages
@@ -528,15 +639,15 @@ $f(x) \triangleq w_0 + w_1 x + w_2 x^2 + \dots + w_D x^D$.]
 * Never tune hyper-parameters / model complexity against the test data; 
 use validation data or cross-validation instead.
 ---
-# Lab work
+# This afternoon: lab work
 
 - Introduction to Python and NumPy
 
 - Either use Google Colab (needs a gmail account)
 
-- Or download the notebook locally (needs, e.g., anaconda)
+- Or download the notebook locally (needs a Python environment)
 
-- We will be present on discord if you have any questions
+- Link available at https://github.com/data-psl/lectures2021
 
     </textarea>
     <style TYPE="text/css">

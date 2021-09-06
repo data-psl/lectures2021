@@ -17,6 +17,14 @@
        float: left;
      }
      .grey { color: #bbbbbb; }
+
+     .footnote {
+        position: absolute;
+        bottom: 3em;
+        margin: 0em 2em;
+      }
+
+     .tiny { font-size: 0.75em; }
       </style>
     <link rel="stylesheet" type="text/css" href="slides.css">
   </head>
@@ -26,17 +34,22 @@ class: center, middle
 
 ## Machine learning with scikit-learn
 
-Arthur Mensch 
+Mathieu Blondel
 
 .affiliations[
-  ![École Normale Supérieure](images/logo_ens_psl_couleur.png)
+Google Research, Brain team
 ]
+
+
+.footnote.tiny[Based on the 2020 [slides](https://data-psl.github.io/lectures2020/slides/04_scikit_learn/) by
+Arthur Mensch]
+
 ---
-# Previously today
+# Previously
 
 Formal definition of supervised learning
 
-- $x \in \mathbb{R}^p \to \hat y = f_\theta(x) \in \lbrace 0, 1 \rbrace$: classification
+- $x \in \mathbb{R}^p \to \hat y = f_\theta(x) \in \lbrace 0, 1 \rbrace$: binary classification
 
     - Is this mail a spam ? Is this a dog ?
 
@@ -46,119 +59,37 @@ Formal definition of supervised learning
 ---
 # This lecture
 
-- What if there isn't any label ? A short introduction to unsupervised learning
+- Loading data
 
-- How do I code all of this ? A short introduction to `scikit-learn`
+- Splitting data
 
+- Defining and fitting estimators
 
+- Grid search
 
----
-# Unsupervised learning
+- Clustering
 
-What can we do if we are only provided data without labels ?
+- Companion libraries
 
-.center[
-<img src="kmeans0.png" style="width: 500px;" />
-]
 
 ---
-# Unsupervised learning
+# Training a supervised model
 
-Cluster them around compact areas
+- We are provided with $n$ samples of "raw" data
+with labels $\mathbf{y} \in \mathbb{R}^n$
 
-.center[
-<img src="kmeans1.png" style="width: 500px;" />
-]
+- General steps
 
----
-# Unsupervised learning
+  1. Transform data into a $n \times p$ matrix $\mathbf{X}$ with n samples with p features
 
-What happened ?
+  2. Split the data into training and test sets
 
-.center[
-<img src="kmeans2.png" style="width: 500px;" />
-]
+  3. Fit a certain estimator to the training data
 
-We found centroids $(y\_j)\_{1\leq j\leq c}$, with minimal distance $ \sum\_{i=1}^n \text{Dist}\big(x\_i, (y\_j)\_{1\leq j\leq c}\big) $
+  4. Evaluate the estimator on the test data
 
 ---
-# Unsupervised learning
-
-Overfitting
-
-.center[
-<img src="kmeans_over.png" style="width: 500px;" />
-]
-
----
-# Unsupervised learning
-
-Underfitting
-
-.center[
-<img src="kmeans_under.png" style="width: 500px;" />
-]
-
----
-# Unsupervised learning
-
-.center[
-<img src="kmeans2.png" style="width: 500px;" />
-]
-
-Why is it useful ?
-  - Cluster number is a new feature !
-  - Propagate a few known-labels (semi-supervised learning)
-
----
-# What should we do to train a model ?
-
-- We are provided a $n \times p$ matrix $\mathbf{X}$ with n samples with p features
-
-- With labels $y \in \mathbb{R}^n$: $n$ associated labels (in a supervised setting)
-
-1. Transform data into a numerical matrix
-
-2. Split the data to retain a *test set*
-
-3. Fit a certain estimator to the data
-
-4. Evaluate the estimator on the data
-
----
-# Getting the data into a numerical format
-
-In order to train a model, we need the data to look like a 2D matrix:
-
-  - Each sample holds a certain number of numerical features
-
-- These features must be build from non-numeric fields.
-
-.left-column[
-<img src="drawings/transform.png" style="width: 300px;" />
-]
-.right-column[
-- Categorical field made into binary columns
-
-- Handle timestamps / ordinal data (ordered labels) / etc.
-
-- Remove column mean, divide by column variance
-]
-
----
-# Splitting the data into a train/validation set
-
-- Evaluate a certain model $f\_{\theta}$ 
-over new data
-
-- Split $\mathbf{X}$, $\mathbf{y}$ into training and evaluation examples
-
-$$(\mathbf{X}\_{train}, \mathbf{y}\_{train}), (\mathbf{X}\_{test}, \mathbf{y}\_{test})$$
-
-- Learn $\theta$ with $(\mathbf{X}\_{train}, \mathbf{y}\_{train})$, evaluate it on $(\mathbf{X}\_{test}, \mathbf{y}\_{test})$
-
----
-# Fitting the data and evaluating prediction
+# A bit more formally
 
 - Define $f_\theta$ with various parameters (**Instantiate**)
 
@@ -170,10 +101,11 @@ $$(\mathbf{X}\_{train}, \mathbf{y}\_{train}), (\mathbf{X}\_{test}, \mathbf{y}\_{
 
 - Select the model $f$ with the best generalization (**Model selection**)
 
-Scikit-learn provides the API to do it easily
+Scikit-learn provides API to do all this easily
 
 ---
-# How to implement it
+# Example
+
 ```python
 
 from sklearn.datasets import load_iris
@@ -193,82 +125,268 @@ y_pred = estimator.predict(X_test)
 
 accuracy = accuracy_score(y_test, y_pred)  # Evaluate the misclassification
 ```
+---
+class: center, middle
 
+# Loading, splitting, preprocessing the data
 ---
 # Loading data
+
+Scikit-learn allows to access many *benchmark datasets*
+
+- `load_XXX` loads toy datasets published with the library
+
 ```python
 from sklearn.datasets import load_iris
 iris = load_iris()
 X, y = iris['data'], iris['target']  # type: np.ndarray
 ```
 
-Scikit-learn allows to access many *benchmark datasets*
-
-- `load_XXX` loads toy datasets published with the library
-
 - `fetch_XXX` downloads bigger dataset from the internet
 
-- Create your own !
+---
+# Getting the data into a numerical matrix
 
-We want to have $X$ and $y$ numeric matrices, i.e. `numpy.array`
+- scikit learn works with numpy arrays: $X$ and $y$ must be converted in this format
 
-- `scikit-learn` provides `Transformer` for this (studied later)
+.centering[
+<img src="drawings/transform.png" style="width: 300px;" />
+]
+
+- For non-numeric fields (strings, categorical variables), a transformation is necessary
 
 ---
-# Splitting data
+# Splitting the data
+
+- Evaluate a certain model $f\_{\theta}$ 
+over new data
+
+- Split $\mathbf{X}$, $\mathbf{y}$ into training and evaluation examples
+
+$$(\mathbf{X}\_{train}, \mathbf{y}\_{train}), (\mathbf{X}\_{test}, \mathbf{y}\_{test})$$
+
+- Learn $\theta$ with $(\mathbf{X}\_{train}, \mathbf{y}\_{train})$, evaluate it on $(\mathbf{X}\_{test}, \mathbf{y}\_{test})$
+
+
+---
+# Splitting the data
+
+- Utilities to separate training and validation data
+
 ```python
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(X, y)
+# Hold out 40% for test purposes
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4)
 ```
 
-- Utilities to separate training and validation data
 - Other utilities to do it repeatedly: `KFoldSplit`, `ShuffleSplit`
-- Stratify according to a group (as many male/female in the train/test groups)
+
+```python
+X = np.array([[1, 2], [3, 4], [1, 2], [3, 4]])
+y = np.array([1, 2, 3, 4])
+
+# 5-fold cross-validation
+kf = KFold(n_splits=5)
+
+for train_index, test_index in kf.split(X):
+  X_train, X_test = X[train_index], X[test_index]
+  y_train, y_test = y[train_index], y[test_index]
+```
+
+- Stratified K-fold (preserves the percentage of samples for each class)
+---
+# Loading from dictionaries
+
+```python
+>>> measurements = [
+...     {'city': 'Dubai', 'temperature': 33.},
+...     {'city': 'London', 'temperature': 12.},
+...     {'city': 'San Francisco', 'temperature': 18.},
+... ]
+
+>>> from sklearn.feature_extraction import DictVectorizer
+>>> vec = DictVectorizer()
+
+>>> vec.fit_transform(measurements).toarray()
+array([[ 1.,  0.,  0., 33.],
+       [ 0.,  1.,  0., 12.],
+       [ 0.,  0.,  1., 18.]])
+```
+
+- Estimators with a `transform` method are called transformers
+
+- `fit_transform` is equivalent to `fit` followed by `transform`
+
+```python
+vec.fit(X, y)
+vec.transform(X)
+```
+---
+# Categorical variables
+
+- Categorical variables must be converted to a one-hot encoding
+
+- Example
+
+```python
+
+enc = OneHotEncoder()
+X = [['Male', 1], ['Female', 3], ['Female', 2]]
+X = enc.fit_transform(X).toarray()
+```
+outputs
+```
+array([[0., 1., 1., 0., 0.],
+       [1., 0., 0., 0., 1.],
+       [1., 0., 0., 1., 0.]])
+```
+---
+# Bag-of-word representations
+
+
+```python
+>>> from sklearn.feature_extraction.text import CountVectorizer
+
+>>> vectorizer = CountVectorizer()
+
+>>> corpus = [
+    'This is the first document.',
+    'This is the second second document.',
+    'And the third one.',
+    'Is this the first document?',
+]
+
+>>> X = vectorizer.fit_transform(corpus)
+
+>>> X.toarray()
+array([[0, 1, 1, 1, 0, 0, 1, 0, 1],
+       [0, 1, 0, 1, 0, 2, 1, 0, 1],
+       [1, 0, 0, 0, 1, 0, 1, 1, 0],
+       [0, 1, 1, 1, 0, 0, 1, 0, 1]]...)
+
+>>> vectorizer.transform(['Something completely new.']).toarray()
+array([[0, 0, 0, 0, 0, 0, 0, 0, 0]]...)
+```
+
+---
+# Useful preprocessing
+
+- Scale the columns: `$x_{i, j} = \frac{x_{i, j} - \text{Mean}(x_{:,j})}{\sqrt{\text{Var}(x_{:,j})}}$`
+
+    - So that they are zero-mean and one-std
+
+```python
+        standard_scaler = StandardScaler()
+        standard_scaler.fit(X)
+        X_t = standard_scaler.transform(X)
+        print(X_t.mean(axis=0))  # [0, 0, ..., 0]
+        print(X_t.std(axis=0)) # [1, 1, ..., 1]
+```
+
+- Impute missing values
+```python
+    imputer = SimpleImputer(strategy='median'))
+    imputer.fit(X) # X contains `np.nan`
+    X_imp = imput.transform(X) # X no longer contains `np.nan`
+```
+
+- Always do those after train/test splitting
+
+---
+# Dimensionality reduction
+
+- Reduce the dimension of the $X$ matrix
+
+- Principal component analysis: multiplication of $X$ by a matrix $P$ that maximizes the variance of $P X$).
+
+```python
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=10)
+pca.fit(X)
+X_t = pca.transform(X)
+# X.shape = (n_samples, p'=10)
+```
+
+---
+# Feature selection
+
+- Perform a $\chi^2$ test to the samples to retrieve only the two best features
+
+```python
+>>> from sklearn.datasets import load_iris
+>>> from sklearn.feature_selection import SelectKBest
+>>> from sklearn.feature_selection import chi2
+
+>>> X, y = load_iris(return_X_y=True)
+>>> X.shape
+(150, 4)
+
+>>> fs = SelectKBest(chi2, k=2)
+>>> X_new = fs.fit_transform(X, y)
+>>> X_new.shape
+(150, 2)
+```
+
+---
+class: center, middle
+
+# Defining, fitting, using and evaluating estimators
 
 ---
 # Defining an estimator
 ```python
 from sklearn.svm import LinearSVC
+
 estimator = LinearSVC(C=1.0)
 ```
 
-Many different models (see documentation)
-  - Classification (multi-class/binary)
-  - Regularization
-  - Multi-target (several targets to predict)
+- Many different models available (see documentation)
 
-In particular:
+- Examples:
   - All linear models (`Ridge`, `SVM`, `LogisticRegression`)
   - Random forests / tree based classifier/regressors (`DecisionTreeClassifier`, `RandomForestClassifier`, ...)
   - Neural-network (Multi-layer perceptron `MLPClassifier`/`MLPRegressor`)
 
 ---
 # Defining an estimator
+
 ```python
 from sklearn.svm import LinearSVC
+
 estimator = LinearSVC(C=1.0)
 ```
 
-Many hyper-parameters, that changes
-  - The model (example: `width`/`depth` for neural-networks)
-  - The function comparing `y_pred` and `y_true`
-  - The regularization over parameters
-  - The method used to fit the model
+- All estimators have a `fit` method
 
+```
+estimator.fit(X, y)
+```
+
+- Hyperparameters are estimator attributes
+
+```python
+print(estimator.C)
+```
+
+- Classifiers and regressors have a `predict` method
+
+```python
+estimator.predict(X)
+```
 
 ---
 # Fitting an estimator
+
 ```python
 estimator.fit(X_train, y_train)
 ```
 
-The `estimator` is a stateful `Python` object.
-
-The fitted parameter $\hat \theta$ is stored as attributes
+Fitted parameters $\hat \theta$ are stored as attributes
 
 ```python
-estimator.intercept_, estimator.weight_
+estimator.coef_, estimator.intercept_
 ```
 
 - Linear: Holds the weight $W$ and bias $b$ of the linear model
@@ -277,7 +395,7 @@ estimator.intercept_, estimator.weight_
 
 - Random forests: holds the various decision rules
 
-- Those attributes allows to use test-time functions
+- Those attributes are used by `predict`
 
 ---
 # Using an estimator
@@ -297,50 +415,174 @@ y_pred = estimator.predict(X_test)
 - When a probabilistic model is available (classifier)
 
 ```python
-y_pred = estimator.predict_proba(X_test)
-# y_pred.shape = (n_samples, n_classes)
+# y_proba.shape = (n_samples, n_classes)
+y_proba = estimator.predict_proba(X_test)
 ```
 
 ---
 # Evaluating an estimator
+
+- Estimator can evaluate their performance directly on test data
+```python
+estimator.score(X_test, y_test)
+```
+with the metric adapted to the estimator
+
+- Possibility to use custom accuracy metrics
+
 ```python
 
 from sklearn.metrics import accuracy_score
 
+y_pred = estimator.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)  # Evaluate the misclassification
+```
+
+- Many metrics available
+        - mean squared error, average error for regression
+        - precision and recall for binary classification
+        - F1 score, balanced accuracy for multi-class classification
+
+---
+# Confusion matrices
+
+```python
+from sklearn.metrics import plot_confusion_matrix
+
+plot_confusion_matrix(estimator, X_test, y_test)
 ```
 
 .center[
 <img src="images/confusion_matrix.png" style="width: 300px;" />
 ]
 
-- Many metrics in `sklearn.metrics`:
-
-        - mean squared error, average error for regression
-
-        - precision and recall for binary classification
-
-        - F1 score, balanced accuracy for multi-class classification
-
 ---
-# Evaluating an estimator
-For classification, all metrics derive from the confusion matrix
+# Pipelines
+ 
+- A way to chain multiple transformations with a final estimator
 
 ```python
-from sklearn.metrics import plot_confusion_matrix
-plot_confusion_matrix(estimator, X_test, y_test)
-```
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+from sklearn.decomposition import PCA
 
-Estimator can evaluate their performance directly on test data
-```python
-estimator.score(X_test, y_test)
-```
-with the metric adapted to the estimator.
+estimators = [('reduce_dim', PCA()), ('clf', SVC())]
 
-- Often you want to choose the metric yourself !
+pipe = Pipeline(estimators)
+pipe.fit(X_train, y_train)
+y_pred = pipe.predict(X_test)
+```
 
 ---
-# Unsupervised learning
+# Hyperparameter selection
+
+- `scikit-learn` provides meta-estimators for hyperparameter selection
+
+- `GridSearchCV` exhaustively tries all hyperparameter combinations
+
+```python
+estimator = LinearSVC(C=1)
+
+# 10 log-spaced values between 10^-7 and 1.0
+C_values = np.logspace(-7, 0, 10)
+
+estimator_cv = GridSearchCV(estimator, param_grid=dict(C=C_values))
+
+# A valid estimator (can use fit and predict on it)
+estimator_cv.fit(X, y)
+```
+
+- `RandomizedSearchCV` randomly tries hyperparameter combinations
+
+---
+# Implement your own model
+
+- When implementing your own model, it is a good idea to follow the scikit-learn API
+
+```python
+class MyModel(sklearn.base.BaseEstimator):
+
+  def __init__(self, hyperparam):
+    self.hyperparam = hyperparam
+
+  def fit(self, X, y):
+    # [...]
+
+  def predict(self, X):
+    # [...]
+```
+
+- Benefits
+
+  - A familiar very readable interface
+  - Compatible with `Pipeline`, `GridSearchCV`, ...
+
+---
+class: center, middle
+
+# Clustering
+
+---
+# Clustering
+
+What can we do if we are only provided data without labels ?
+
+.center[
+<img src="kmeans0.png" style="width: 500px;" />
+]
+
+---
+# Clustering
+
+Cluster them around compact areas
+
+.center[
+<img src="kmeans1.png" style="width: 500px;" />
+]
+
+---
+# Clustering
+
+What happened ?
+
+.center[
+<img src="kmeans2.png" style="width: 500px;" />
+]
+
+We found centroids $(c\_j)\_{1\leq j\leq K}$, with minimal distance $ \sum\_{i=1}^n \text{Dist}\big(x\_i, (c\_j)\_{1\leq j\leq K}\big) $
+
+---
+# Clustering
+
+Overfitting
+
+.center[
+<img src="kmeans_over.png" style="width: 500px;" />
+]
+
+---
+# Clustering
+
+Underfitting
+
+.center[
+<img src="kmeans_under.png" style="width: 500px;" />
+]
+
+---
+# Clustering
+
+.center[
+<img src="kmeans2.png" style="width: 450px;" />
+]
+
+Why is it useful ?
+  - Extract groups in the data
+  - Vector quantization (compression)
+  - Cluster number is a new feature !
+  - Propagate a few known-labels (semi-supervised learning)
+---
+# Clustering with K-means
 
 ```python
 from sklearn.datasets import make_classification
@@ -352,6 +594,8 @@ X, y = make_classification(n_samples=200,
 
 km = KMeans(n_clusters=4)
 km.fit(X)
+
+# Cluster assignments 
 y_pred = km.predict(X)
 
 plt.scatter(X[:, 0], X[:, 1], c=y_pred)
@@ -361,174 +605,58 @@ plt.scatter(X[:, 0], X[:, 1], c=y_pred)
 <img src="kmeans2.png" style="width: 300px;" />
 ]
 
----
-# Choosing your estimator
-.center[
-<img src="images/ml_map.png" style="width: 800px;" />
-]
-
 
 ---
-# Preprocessing
+class: center, middle
 
-- Data may come in an Excel-like format:
-  - `numpy array` with column names
-  - Object of the `pandas` library
-
-- We need to transform it into a true numpy array
-
-- Use `Transformer objects`
-```python
-# Assume X is a dataframe with strings
-transformer = OneHotEncoder(sparse=False)
-transformer.fit(X) # Notice the absence of y
-X = transformer.transform(X)
-```
-
----
-# Useful preprocessing
-
-- Scale the columns: `$x_{i, j} = \frac{x_{i, j} - \text{Mean}(x_j)}{\sqrt{\text{Var}(x_j)}}$`
-
-    - So that they are zero-mean and one-std
-
-```python
-        standard_scaler = StandardScaler()
-        standard_scaler.fit(X)
-        X_t = standard_scaler.transform(X)
-        print(X_t.mean(axis=0))  # [0, 0, ..., 0]
-        print(X_t.std(axis=0)) # [1, 1, ..., 1]
-```
-
-- Impute missing values
-```python
-    imputer = SimpleImputer(strategy='median'))
-    imputer.fit(X, stragy='median') # X contains `np.nan`
-    X_imp = imput.transform(X) # X no longer contains `np.nan`
-```
-
----
-# Useful preprocessing
-
-- Reduce the dimension of the $X$ matrix
-  - Random projection (multiplication of $X$ by a matrix $P \in \mathbb{R}^{p' \times p}$)
-  - Principal component analysis: multiplication of $X$ by a matrix $P$ that maximizes the variance of $P X$).
-
-```python
-from sklearn.decomposition import PCA
-pca = PCA(n_components=10)
-pca.fit(X)
-X_t = pca.transform(X)
-# X.shape = (n_samples, p'=10)
-```
-
----
-# Useful preprocessing
-
-- Select relevant features only
-
-```python
-from sklearn.feature_selection import SelectKBest, f_regression
-
-anova_filter = SelectKBest(score_func=f_regression, k=3)  
-# Will select the 3 best features that are
-# the highest-correlated with the target y
-anova_filter.fit(X, y)
-X_t = anova_filter.transform(X)
-# X_t.shape = (n_samples, 3)
-```
-
+# Companion libraries
 
 
 ---
-# Model selection
-
-`scikit-learn` provides meta-estimators:
-
-```python
-estimator = LinearSVC(C=1)
-estimator_cv = GridSearchCV(estimator, 
-                            param_grid=dict(C=np.logspace(-7, 0, 1)))
-# Still an estimator !
-estimator_cv.fit(X, y)  # Tests validation performance for all C
-```
-
-- So that you may forget about hyper-parameters
-
-- While knowing what you are doing (too big a grid overfits !)
-
-
-
----
-# And also
-
-- The `Pipeline` object to connect `transformers` and `estimators`
-
-    - [Example](https://scikit-learn.org/stable/auto_examples/compose/plot_digits_pipe.html) of piping a dimension reduction and a logistic regression
-
-- Many other preprocessing utilities:
-      - Label pre-processing
-      - Dimension reduction
-      - Feature selection
-
-- Standard routines: `cross_val`, etc.
-
-- Plotting functions:
-        - Precision/recall curves / Training curves / Feature importance / Data visualization
-
-
----
-# Implement your own model
-
-- The API is well defined and should follow known rules
-
-- You may create your own estimator object and connect it to `Pipeline` and `GridSearchCV`
-
-
----
-# Companion lib: `matplotlib`
+# `matplotlib`
 
 .center[
 <img src="images/matplotlib.webp" style="width: 500px;" />
 ]
 
 ---
-# Companion lib: `Pandas`
-- `Pandas` to handle columnar data + time-series
+# `Pandas`
 
-.center[
-<img src="images/pandas.png" style="width: 500px;" />
-]
+- Data structures and operations for manipulating numerical tables and time series
 
----
-# Handling `pandas.DataFrame`
-- `Pandas` to `numpy` with `ColumnTransformer` and `Pipeline`
+- Features (columns) have labels and can have different types
 
 ```python
-X, y = fetch_openml("titanic", version=1, as_frame=True, return_X_y=True)
-categorical_columns = ['pclass', 'sex', 'embarked',]
-numerical_columns = ['age', 'sibsp', 'parch', 'fare']
+import pandas as pd
 
-X = X[categorical_columns + numerical_columns]
-X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y)
-
-categorical_pipe = Pipeline([
-    ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
-    ('onehot', OneHotEncoder(handle_unknown='ignore'))
-])
-numerical_pipe = Pipeline([
-    ('imputer', SimpleImputer(strategy='mean'))
-])
-preprocessing = ColumnTransformer(
-    [('cat', categorical_pipe, categorical_columns),
-     ('num', numerical_pipe, numerical_columns)])
-
-preprocessing.fit(X_train)
-X_train = preprocessing.transform(X_train)  # Now a Numpy array
+X = pd.DataFrame(
+     {'city': ['London', 'London', 'Paris', 'Sallisaw'],
+      'title': ["His Last Bow", "How Watson Learned the Trick",
+                "A Moveable Feast", "The Grapes of Wrath"],
+      'expert_rating': [5, 3, 4, 5],
+      'user_rating': [4, 5, 4, 3]})
 ```
 
 ---
-# Companion lib: `Seaborn`
+# Reduction to numpy array
+
+- `ColumnTransformer` can be used to apply different transformations per column
+
+```python
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import OneHotEncoder
+
+column_trans = ColumnTransformer(
+...     [('city_category', OneHotEncoder(), 'city'),
+...      ('title_bow', CountVectorizer(), 'title')],
+...     remainder='passthrough')
+
+X = column_trans.fit(X)
+```
+
+---
+# `Seaborn`
 - Quickly visualize `pandas` DataFrame
 
 
@@ -541,17 +669,15 @@ X_train = preprocessing.transform(X_train)  # Now a Numpy array
 
 
 ---
-# This afternoon
+# This afternoon: lab work
 
-- A notebook tutorial on `scikit-learn`
+- A tutorial on `scikit-learn`
 
-- For those who go fast:
+- Link available at https://github.com/data-psl/lectures2021
 
-    - `Pipeline`
-    - `GridSearchCV`
-
-- Take your own data and explore it !
-
+.center[
+<img src="images/ml_map.png" style="width: 650px;" />
+]
 
 
 
