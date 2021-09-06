@@ -904,13 +904,13 @@ In 2-d, if you only have $2$ points, you can always separate them with a line.
 Target $y$: number of covid cases in France in the last 3 days
 
 
-$y = (7379, 5353, 5413)$
+$y = (13466, 13336, 10410)$
 
 --
 
 3 features:
 
-- Temperature in Paris in the last 3 days: $x_1 = (19, 21, 19)$
+- Temperature in Paris in the last 3 days: $x_1 = (27, 30, 31)$
 
 --
 - Height of the tide in Brest: $x_2 = (5.62, 5.90, 6.26)$
@@ -923,7 +923,7 @@ $y = (7379, 5353, 5413)$
 You can check that:
 
 $$
-y = 11349.1 \times x_1 -9995.8 \times x_2 + 87.3 \times x_3
+y = 34388 \times x_1 -30673 \times x_2 + 168 \times x_3
 $$
 
 ---
@@ -948,13 +948,28 @@ Output $z_1, \cdots, z_q$
 
 **Parameters**
 
-- Weights of $p$ coefficients $w^i$, $i=1\dots q$
-- Biases $b^i$
+- Weights of $p$ coefficients $w^i\in\mathbb{R}$, $i=1\dots q$
+- Biases $b^i\in\mathbb{R}$
 - Non linearity $\sigma$ (e.g. $\sigma = ReLU, \sigma = \tanh$, ...)
 
 --
 
 $$z_i = \sigma(w^i_1\times x_1 + \dots + w^i_p \times x_p + b^i)$$
+
+---
+# Non linearities
+
+- $\sigma$ is a function $\mathbb{R}\to\mathbb{R}$
+- Non-linear: $\sigma(x) \neq a\times x$
+
+
+**ReLU**
+
+.center[
+<img src="relu.png" style="width: 350px;" />
+<br/>
+]
+
 
 
 ---
@@ -976,7 +991,7 @@ Layers are stacked:
 # Neural networks
 
 
-$z_i = \sigma(w^i_1\times x_1 + \dots + w^i_p \times x_p + b)$
+$z_i = \sigma(w^i_1\times x_1 + \dots + w^i_p \times x_p + b^i)$
 
 Layers are stacked:
 
