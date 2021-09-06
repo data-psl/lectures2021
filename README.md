@@ -1,4 +1,4 @@
-# Machine learning preparatory week @PSL 
+# Machine learning preparatory week @PSL
 
 ## Lectures
 
