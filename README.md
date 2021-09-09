@@ -18,7 +18,7 @@ Links open Colab notebooks. You may also clone this repository and work locally.
  1. Monday: [Python basics](https://colab.research.google.com/github/data-psl/lectures2021/blob/master/notebooks/01_python_basics.ipynb)
  2. Tuesday: [Practice of Scikit-learn](https://github.com/data-psl/lectures2021/tree/master/notebooks/02_sklearn)
  3. Wednesday: [Optimization](https://colab.research.google.com/github/data-psl/lectures2021/blob/master/notebooks/03_optimization.ipynb)
- 4. Thursday: [Classification with PyTorch and GPUs](https://github.com/data-psl/lectures2021/tree/master/notebooks/04_pytorch)
+ 4. Thursday: Classification with PyTorch and GPUs [Notebook 1](https://github.com/data-psl/lectures2021/blob/main/notebooks/04_pytorch/01_introduction_to_pytorch.ipynb) [Notebook 2](https://github.com/data-psl/lectures2021/blob/main/notebooks/04_pytorch/02_simple_neural_network.ipynb) [Notebook 3](https://github.com/data-psl/lectures2021/blob/main/notebooks/04_pytorch/03_convolutional_neural_network_mnist.ipynb)
  5. Friday: Introduction to spark for ML
 
 ## Teachers
