@@ -35,7 +35,7 @@ Links open Colab notebooks. You may also clone this repository and work locally.
  * [Mathieu Blondel](https://mblondel.org) (Google Brain)
  * [Arthur Mensch](https://amensch.fr) (ENS, DMA)
  * [Dario Colazzo](https://www.lamsade.dauphine.fr/~colazzo/) (Dauphine Université)
-
+ * [Thierry Kirat](https://irisso.dauphine.fr/membres/detail-cv.html?tx_sngprofiles_displayprofiles%5Bprofile%5D=2548&tx_sngprofiles_displayprofiles%5Baction%5D=show&tx_sngprofiles_displayprofiles%5Bcontroller%5D=Profile&cHash=172591dfb873872cfb5df5536a3e51cc) (Dauphine Université)
 
 ## Acknowledgements
 
