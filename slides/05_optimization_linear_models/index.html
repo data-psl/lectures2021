@@ -45,10 +45,10 @@ class: center, middle
 
 # Optimization of linear models
 
-Mathieu Blondel
+Zaccharie Ramzi
 
 .affiliations[
-Google Research, Brain team
+  ![École Normale Supérieure](images/logo_ens_psl_couleur.png)
 ]
 
 .footnote.tiny[Credits: some figures are borrowed from the scikit-learn [mooc](https://github.com/inria/scikit-learn-mooc/).
@@ -106,7 +106,7 @@ Salary = 0.4 x Education + 0.2 x Hours-per-week + 0.1 x Age + ...
 
 Features are also commonly called explanatory variables.
 
-Weights are interpretable, large magnitude indicating feature importance.
+Weights are interpretable, large magnitude indicating feature importance (up to scaling).
 
 ---
 # Linear regression $(d=1)$
@@ -251,6 +251,12 @@ stationary points are optimal solutions
 ---
 # Analytical solution
 
+- Recall:
+
+$$
+L(\mathbf{w}) = \frac{1}{2} ||\mathbf{y} - \mathbf{X} \mathbf{w}||^2 + \frac{\alpha}{2} ||\mathbf{w}||^2
+$$
+
 - For ridge regression, the gradient of $L(\mathbf{w})$ is
 
 $$
@@ -261,7 +267,7 @@ $$
 - Setting the gradient to zero, we obtain
 
 $$
-\mathbf{X}^\top \mathbf{X} \mathbf{w} + \alpha \mathbf{w} = \mathbf{X}^\top \mathbf{y}
+\mathbf{X}^\top \mathbf{X} \mathbf{w} + \alpha \mathbf{w}^\star = \mathbf{X}^\top \mathbf{y}
 $$
 
 --
