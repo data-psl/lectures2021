@@ -53,13 +53,15 @@ Zaccharie Ramzi
 ---
 ## Many other applications
 
+Some of them made obsolete by transformers:
+
 <br/>
 
 ### Speech recognition &amp; speech synthesis
 
 --
 
-### Natural language processing (until recently)
+### Natural language processing
 
 --
 
@@ -152,7 +154,7 @@ class: middle, center
 
 --
 
-We never flatten directly on large images. We will use transformation with less parameters: **convolution** layers
+We never flatten directly on large images. We will use a transformation with less parameters: **convolution** layers
 
 ---
 ## Using patches
@@ -419,7 +421,7 @@ Schematic from Stanford http://cs231n.github.io/convolutional-networks
 
 - Stack convolutions (with optional stride and padding)
   $$x \rightarrow h\_1 = relu(w \star x + b) \rightarrow relu(w' \star h\_1 + b) \rightarrow \dots $$
-- From time to time (creates translation invariance)
+- From time to time (enables multiscale analysis)
   $$h\_n \rightarrow pooling(h\_{n-1}) \rightarrow \dots $$
 
 ### What happens at the end ?
@@ -553,17 +555,6 @@ FC8:       [1000]      1000 neurons (softmax logits)
 
 .center[
           <img src="images/lecunconv.png" style="width: 760px;" />
-]
-
----
-## VGG-16
-
-.center[
-          <img src="images/vgg.png" style="width: 600px;" />
-]
-
-.footnote.small[
-Simonyan, Karen, and Zisserman. "Very deep convolutional networks for large-scale image recognition." (2014)
 ]
 
 ---
@@ -730,6 +721,8 @@ available!
 <img src="images/augmented-cat.png" style="width: 550px" />
 ]
 
+---
+## Transformers for NLP
 
 ---
 ## This afternoon in the lab
